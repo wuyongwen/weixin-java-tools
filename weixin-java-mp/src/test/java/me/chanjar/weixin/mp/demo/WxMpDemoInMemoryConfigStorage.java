@@ -11,7 +11,7 @@ import java.io.InputStream;
  * @author Daniel Qian
  */
 @XStreamAlias("xml")
-class WxMpDemoInMemoryConfigStorage extends WxMpInMemoryConfigStorage {
+public class WxMpDemoInMemoryConfigStorage extends WxMpInMemoryConfigStorage {
 
   @Override
   public String toString() {
