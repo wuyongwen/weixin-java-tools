@@ -14,6 +14,39 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.UUID;
 
+import org.apache.http.Consts;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.internal.Streams;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.thoughtworks.xstream.XStream;
+
 import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.common.bean.WxAccessToken;
 import me.chanjar.weixin.common.bean.WxJsapiSignature;
@@ -74,35 +107,6 @@ import me.chanjar.weixin.mp.util.http.MaterialVideoInfoRequestExecutor;
 import me.chanjar.weixin.mp.util.http.MaterialVoiceAndImageDownloadRequestExecutor;
 import me.chanjar.weixin.mp.util.http.QrCodeRequestExecutor;
 import me.chanjar.weixin.mp.util.json.WxMpGsonBuilder;
-
-import org.apache.http.Consts;
-import org.apache.http.HttpHost;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.helpers.MessageFormatter;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.internal.Streams;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import com.thoughtworks.xstream.XStream;
 
 public class WxMpServiceImpl implements WxMpService {
 
@@ -290,7 +294,40 @@ public class WxMpServiceImpl implements WxMpService {
     String url = "http://file.api.weixin.qq.com/cgi-bin/media/get";
     return execute(new MediaDownloadRequestExecutor(wxMpConfigStorage.getTmpDirFile()), url, "media_id=" + media_id);
   }
+  @Override
+  public String imageUpload(File file) throws WxErrorException {
+	  String url = "https://api.weixin.qq.com/cgi-bin/media/uploadimg";
+	  return execute(new RequestExecutor<String,File>(){
 
+		@Override
+		public String execute(CloseableHttpClient httpclient, HttpHost httpProxy, String uri, File file)
+				throws WxErrorException, ClientProtocolException, IOException {
+			HttpPost httpPost = new HttpPost(uri);
+		    if (httpProxy != null) {
+		      RequestConfig config = RequestConfig.custom().setProxy(httpProxy).build();
+		      httpPost.setConfig(config);
+		    }
+		    if (file != null) {
+		      HttpEntity entity = MultipartEntityBuilder
+		            .create()
+		            .addBinaryBody("media", file)
+		            .setMode(HttpMultipartMode.RFC6532)
+		            .build();
+		      httpPost.setEntity(entity);
+		      httpPost.setHeader("Content-Type", ContentType.MULTIPART_FORM_DATA.toString());
+		    }
+		    try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
+		      String responseContent = Utf8ResponseHandler.INSTANCE.handleResponse(response);
+		      WxError error = WxError.fromJson(responseContent);
+		      if (error.getErrorCode() != 0) {
+		        throw new WxErrorException(error);
+		      }
+		      //HashMap<String,String> map = WxGsonBuilder.create().fromJson(responseContent, HashMap.class);
+		      return responseContent;
+		    }
+		  }
+	  }, url, file);
+  }
   public WxMpMaterialUploadResult materialFileUpload(String mediaType, WxMpMaterial material) throws WxErrorException {
     String url = "https://api.weixin.qq.com/cgi-bin/material/add_material?type=" + mediaType;
     return execute(new MaterialUploadRequestExecutor(), url, material);
