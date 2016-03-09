@@ -33,7 +33,7 @@ public interface WxMpConfigStorage {
    * @param accessToken
    * @param expiresIn
    */
-  public void updateAccessToken(String accessToken, int expiresIn);
+  public void updateAccessToken(String accessToken, long expiresIn);
 
   public String getJsapiTicket();
 

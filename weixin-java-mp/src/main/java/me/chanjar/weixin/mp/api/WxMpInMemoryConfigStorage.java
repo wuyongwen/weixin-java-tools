@@ -51,9 +51,9 @@ public class WxMpInMemoryConfigStorage implements WxMpConfigStorage {
     updateAccessToken(accessToken.getAccessToken(), accessToken.getExpiresIn());
   }
   
-  public synchronized void updateAccessToken(String accessToken, int expiresInSeconds) {
+  public synchronized void updateAccessToken(String accessToken, long l) {
     this.accessToken = accessToken;
-    this.expiresTime = System.currentTimeMillis() + (expiresInSeconds - 200) * 1000l;
+    this.expiresTime = l;
   }
 
   public void expireAccessToken() {
