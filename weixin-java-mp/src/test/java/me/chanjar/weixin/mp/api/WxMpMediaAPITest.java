@@ -1,4 +1,4 @@
-package me.chanjar.weixin.mp.api;
+ package me.chanjar.weixin.mp.api;
 
 import com.google.inject.Inject;
 import me.chanjar.weixin.common.api.WxConsts;
