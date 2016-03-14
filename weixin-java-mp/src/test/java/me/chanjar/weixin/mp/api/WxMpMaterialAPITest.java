@@ -1,23 +1,36 @@
 package me.chanjar.weixin.mp.api;
 
-import com.google.inject.Inject;
-import me.chanjar.weixin.common.api.WxConsts;
-import me.chanjar.weixin.common.exception.WxErrorException;
-import me.chanjar.weixin.common.util.fs.FileUtils;
-import me.chanjar.weixin.mp.bean.WxMpMaterial;
-import me.chanjar.weixin.mp.bean.WxMpMaterialArticleUpdate;
-import me.chanjar.weixin.mp.bean.WxMpMaterialNews;
-import me.chanjar.weixin.mp.bean.result.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.apache.commons.io.IOUtils;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Guice;
 import org.testng.annotations.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import com.google.inject.Inject;
+
+import me.chanjar.weixin.common.api.WxConsts;
+import me.chanjar.weixin.common.exception.WxErrorException;
+import me.chanjar.weixin.common.util.fs.FileUtils;
+import me.chanjar.weixin.mp.bean.WxMpMaterial;
+import me.chanjar.weixin.mp.bean.WxMpMaterialArticleUpdate;
+import me.chanjar.weixin.mp.bean.WxMpMaterialNews;
+import me.chanjar.weixin.mp.bean.WxMpMaterialNewsArticle;
+import me.chanjar.weixin.mp.bean.result.WxMpMaterialCountResult;
+import me.chanjar.weixin.mp.bean.result.WxMpMaterialFileBatchGetResult;
+import me.chanjar.weixin.mp.bean.result.WxMpMaterialNewsBatchGetResult;
+import me.chanjar.weixin.mp.bean.result.WxMpMaterialUploadResult;
+import me.chanjar.weixin.mp.bean.result.WxMpMaterialVideoInfoResult;
 
 /**
  * 测试多媒体文件上传下载
@@ -76,7 +89,7 @@ public class WxMpMaterialAPITest {
 
     // 单图文消息
     WxMpMaterialNews wxMpMaterialNewsSingle = new WxMpMaterialNews();
-    WxMpMaterialNews.WxMpMaterialNewsArticle mpMaterialNewsArticleSingle = new WxMpMaterialNews.WxMpMaterialNewsArticle();
+    WxMpMaterialNewsArticle mpMaterialNewsArticleSingle = new WxMpMaterialNewsArticle();
     mpMaterialNewsArticleSingle.setAuthor("author");
     mpMaterialNewsArticleSingle.setThumbMediaId(thumbMediaId);
     mpMaterialNewsArticleSingle.setTitle("single title");
@@ -88,7 +101,7 @@ public class WxMpMaterialAPITest {
 
     // 多图文消息
     WxMpMaterialNews wxMpMaterialNewsMultiple = new WxMpMaterialNews();
-    WxMpMaterialNews.WxMpMaterialNewsArticle wxMpMaterialNewsArticleMutiple1 = new WxMpMaterialNews.WxMpMaterialNewsArticle();
+    WxMpMaterialNewsArticle wxMpMaterialNewsArticleMutiple1 = new WxMpMaterialNewsArticle();
     wxMpMaterialNewsArticleMutiple1.setAuthor("author1");
     wxMpMaterialNewsArticleMutiple1.setThumbMediaId(thumbMediaId);
     wxMpMaterialNewsArticleMutiple1.setTitle("multi title1");
@@ -97,7 +110,7 @@ public class WxMpMaterialAPITest {
     wxMpMaterialNewsArticleMutiple1.setShowCoverPic(true);
     wxMpMaterialNewsArticleMutiple1.setDigest("");
 
-    WxMpMaterialNews.WxMpMaterialNewsArticle wxMpMaterialNewsArticleMultiple2 = new WxMpMaterialNews.WxMpMaterialNewsArticle();
+    WxMpMaterialNewsArticle wxMpMaterialNewsArticleMultiple2 = new WxMpMaterialNewsArticle();
     wxMpMaterialNewsArticleMultiple2.setAuthor("author2");
     wxMpMaterialNewsArticleMultiple2.setThumbMediaId(thumbMediaId);
     wxMpMaterialNewsArticleMultiple2.setTitle("multi title2");
@@ -166,7 +179,7 @@ public class WxMpMaterialAPITest {
     WxMpMaterialNews wxMpMaterialNewsSingle = wxService.materialNewsInfo(singleNewsMediaId);
     Assert.assertNotNull(wxMpMaterialNewsSingle);
     WxMpMaterialArticleUpdate wxMpMaterialArticleUpdateSingle = new WxMpMaterialArticleUpdate();
-    WxMpMaterialNews.WxMpMaterialNewsArticle articleSingle = wxMpMaterialNewsSingle.getArticles().get(0);
+    WxMpMaterialNewsArticle articleSingle = wxMpMaterialNewsSingle.getArticles().get(0);
     articleSingle.setContent("content single update");
     wxMpMaterialArticleUpdateSingle.setMediaId(singleNewsMediaId);
     wxMpMaterialArticleUpdateSingle.setArticles(articleSingle);
@@ -180,7 +193,7 @@ public class WxMpMaterialAPITest {
     WxMpMaterialNews wxMpMaterialNewsMultiple = wxService.materialNewsInfo(multiNewsMediaId);
     Assert.assertNotNull(wxMpMaterialNewsMultiple);
     WxMpMaterialArticleUpdate wxMpMaterialArticleUpdateMulti = new WxMpMaterialArticleUpdate();
-    WxMpMaterialNews.WxMpMaterialNewsArticle articleMulti = wxMpMaterialNewsMultiple.getArticles().get(1);
+    WxMpMaterialNewsArticle articleMulti = wxMpMaterialNewsMultiple.getArticles().get(1);
     articleMulti.setContent("content 2 update");
     wxMpMaterialArticleUpdateMulti.setMediaId(multiNewsMediaId);
     wxMpMaterialArticleUpdateMulti.setArticles(articleMulti);

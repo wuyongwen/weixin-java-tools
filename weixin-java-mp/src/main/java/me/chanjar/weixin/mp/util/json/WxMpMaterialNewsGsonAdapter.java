@@ -8,10 +8,19 @@
  */
 package me.chanjar.weixin.mp.util.json;
 
-import com.google.gson.*;
-import me.chanjar.weixin.mp.bean.WxMpMaterialNews;
-
 import java.lang.reflect.Type;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
+
+import me.chanjar.weixin.mp.bean.WxMpMaterialNews;
+import me.chanjar.weixin.mp.bean.WxMpMaterialNewsArticle;
 
 public class WxMpMaterialNewsGsonAdapter implements JsonSerializer<WxMpMaterialNews>, JsonDeserializer<WxMpMaterialNews> {
 
@@ -19,8 +28,8 @@ public class WxMpMaterialNewsGsonAdapter implements JsonSerializer<WxMpMaterialN
     JsonObject newsJson = new JsonObject();
 
     JsonArray articleJsonArray = new JsonArray();
-    for (WxMpMaterialNews.WxMpMaterialNewsArticle article : wxMpMaterialNews.getArticles()) {
-      JsonObject articleJson = WxMpGsonBuilder.create().toJsonTree(article, WxMpMaterialNews.WxMpMaterialNewsArticle.class).getAsJsonObject();
+    for (WxMpMaterialNewsArticle article : wxMpMaterialNews.getArticles()) {
+      JsonObject articleJson = WxMpGsonBuilder.create().toJsonTree(article, WxMpMaterialNewsArticle.class).getAsJsonObject();
       articleJsonArray.add(articleJson);
     }
     newsJson.add("articles", articleJsonArray);
@@ -35,7 +44,7 @@ public class WxMpMaterialNewsGsonAdapter implements JsonSerializer<WxMpMaterialN
       JsonArray articles = json.getAsJsonArray("news_item");
       for (JsonElement article1 : articles) {
         JsonObject articleInfo = article1.getAsJsonObject();
-        WxMpMaterialNews.WxMpMaterialNewsArticle article = WxMpGsonBuilder.create().fromJson(articleInfo, WxMpMaterialNews.WxMpMaterialNewsArticle.class);
+        WxMpMaterialNewsArticle article = WxMpGsonBuilder.create().fromJson(articleInfo, WxMpMaterialNewsArticle.class);
         wxMpMaterialNews.addArticle(article);
       }
     }

@@ -8,15 +8,22 @@
  */
 package me.chanjar.weixin.mp.util.json;
 
-import com.google.gson.*;
-import me.chanjar.weixin.common.util.json.GsonHelper;
-import me.chanjar.weixin.mp.bean.WxMpMaterialNews;
-
 import java.lang.reflect.Type;
 
-public class WxMpMaterialNewsArticleGsonAdapter implements JsonSerializer<WxMpMaterialNews.WxMpMaterialNewsArticle>, JsonDeserializer<WxMpMaterialNews.WxMpMaterialNewsArticle> {
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 
-  public JsonElement serialize(WxMpMaterialNews.WxMpMaterialNewsArticle article, Type typeOfSrc, JsonSerializationContext context) {
+import me.chanjar.weixin.common.util.json.GsonHelper;
+import me.chanjar.weixin.mp.bean.WxMpMaterialNewsArticle;
+
+public class WxMpMaterialNewsArticleGsonAdapter implements JsonSerializer<WxMpMaterialNewsArticle>, JsonDeserializer<WxMpMaterialNewsArticle> {
+
+  public JsonElement serialize(WxMpMaterialNewsArticle article, Type typeOfSrc, JsonSerializationContext context) {
     JsonObject articleJson = new JsonObject();
 
     articleJson.addProperty("thumb_media_id", article.getThumbMediaId());
@@ -38,9 +45,9 @@ public class WxMpMaterialNewsArticleGsonAdapter implements JsonSerializer<WxMpMa
     return articleJson;
   }
 
-  public WxMpMaterialNews.WxMpMaterialNewsArticle deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+  public WxMpMaterialNewsArticle deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
     JsonObject articleInfo = jsonElement.getAsJsonObject();
-    WxMpMaterialNews.WxMpMaterialNewsArticle article = new WxMpMaterialNews.WxMpMaterialNewsArticle();
+    WxMpMaterialNewsArticle article = new WxMpMaterialNewsArticle();
 
     JsonElement title = articleInfo.get("title");
     if (title != null && !title.isJsonNull()) {
