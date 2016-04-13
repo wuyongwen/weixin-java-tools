@@ -4,7 +4,11 @@ import java.io.File;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.HttpHost;
+import org.apache.http.impl.client.CloseableHttpClient;
+
 import me.chanjar.weixin.common.bean.WxAccessToken;
+import me.chanjar.weixin.common.exception.WxErrorException;
 
 /**
  * 微信客户端配置存储
@@ -77,4 +81,6 @@ public interface WxMpConfigStorage {
   public File getTmpDirFile();
 
   public SSLContext getSSLContext();
+  
+  public void updateAccessToken(HttpHost httpHost,CloseableHttpClient httpClient) throws WxErrorException;
 }

@@ -113,11 +113,6 @@ public class WxMpServiceImpl implements WxMpService {
   protected final Logger log = LoggerFactory.getLogger(WxMpServiceImpl.class);
 
   /**
-   * 全局的是否正在刷新access token的锁
-   */
-  protected final Object globalAccessTokenRefreshLock = new Object();
-
-  /**
    * 全局的是否正在刷新jsapi_ticket的锁
    */
   protected final Object globalJsapiTicketRefreshLock = new Object();
@@ -151,32 +146,7 @@ public class WxMpServiceImpl implements WxMpService {
       wxMpConfigStorage.expireAccessToken();
     }
     if (wxMpConfigStorage.isAccessTokenExpired()) {
-      synchronized (globalAccessTokenRefreshLock) {
-        if (wxMpConfigStorage.isAccessTokenExpired()) {
-          String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential"
-              + "&appid=" + wxMpConfigStorage.getAppId()
-              + "&secret=" + wxMpConfigStorage.getSecret();
-          try {
-            HttpGet httpGet = new HttpGet(url);
-            if (httpProxy != null) {
-              RequestConfig config = RequestConfig.custom().setProxy(httpProxy).build();
-              httpGet.setConfig(config);
-            }
-            CloseableHttpResponse response = getHttpclient().execute(httpGet);
-            String resultContent = new BasicResponseHandler().handleResponse(response);
-            WxError error = WxError.fromJson(resultContent);
-            if (error.getErrorCode() != 0) {
-              throw new WxErrorException(error);
-            }
-            WxAccessToken accessToken = WxAccessToken.fromJson(resultContent);
-            wxMpConfigStorage.updateAccessToken(accessToken.getAccessToken(), accessToken.getExpiresIn());
-          } catch (ClientProtocolException e) {
-            throw new RuntimeException(e);
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
-        }
-      }
+    	wxMpConfigStorage.updateAccessToken(httpProxy,getHttpclient());
     }
     return wxMpConfigStorage.getAccessToken();
   }
