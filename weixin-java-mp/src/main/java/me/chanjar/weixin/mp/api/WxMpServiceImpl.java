@@ -236,7 +236,11 @@ public class WxMpServiceImpl implements WxMpService {
       throw e;
     }
   }
-  
+  public String selfMenuGet() throws WxErrorException{
+	  String url = "https://api.weixin.qq.com/cgi-bin/get_current_selfmenu_info";
+	  String resultContent = execute(new SimpleGetRequestExecutor(), url, null);
+	  return resultContent;
+  }
   public WxMenu menuTryMatch(String userid) throws WxErrorException {
     String url = "https://api.weixin.qq.com/cgi-bin/menu/trymatch";
     try {
@@ -280,7 +284,7 @@ public class WxMpServiceImpl implements WxMpService {
 		    if (file != null) {
 		      HttpEntity entity = MultipartEntityBuilder
 		            .create()
-		            .addBinaryBody("media", file)
+		            .addBinaryBody("media",file,ContentType.APPLICATION_OCTET_STREAM,file.getName())
 		            .setMode(HttpMultipartMode.RFC6532)
 		            .build();
 		      httpPost.setEntity(entity);

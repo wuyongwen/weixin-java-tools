@@ -394,6 +394,7 @@ public interface WxMpService {
    */
   public WxMenu menuGet() throws WxErrorException;
   
+  public String selfMenuGet() throws WxErrorException;
   /**
    * <pre>
    * 测试个性化菜单匹配结果
