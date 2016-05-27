@@ -260,12 +260,12 @@ public class WxMpServiceImpl implements WxMpService {
   }
 
   public WxMediaUploadResult mediaUpload(String mediaType, File file) throws WxErrorException {
-    String url = "http://file.api.weixin.qq.com/cgi-bin/media/upload?type=" + mediaType;
+    String url = "http://api.weixin.qq.com/cgi-bin/media/upload?type=" + mediaType;
     return execute(new MediaUploadRequestExecutor(), url, file);
   }
 
   public File mediaDownload(String media_id) throws WxErrorException {
-    String url = "http://file.api.weixin.qq.com/cgi-bin/media/get";
+    String url = "http://api.weixin.qq.com/cgi-bin/media/get";
     return execute(new MediaDownloadRequestExecutor(wxMpConfigStorage.getTmpDirFile()), url, "media_id=" + media_id);
   }
   @Override
@@ -282,13 +282,13 @@ public class WxMpServiceImpl implements WxMpService {
 		      httpPost.setConfig(config);
 		    }
 		    if (file != null) {
-		      HttpEntity entity = MultipartEntityBuilder
+ 		      HttpEntity entity = MultipartEntityBuilder
 		            .create()
 		            .addBinaryBody("media",file,ContentType.APPLICATION_OCTET_STREAM,file.getName())
 		            .setMode(HttpMultipartMode.RFC6532)
 		            .build();
 		      httpPost.setEntity(entity);
-		      httpPost.setHeader("Content-Type", ContentType.MULTIPART_FORM_DATA.toString());
+		      //httpPost.setHeader("Content-Type", ContentType.MULTIPART_FORM_DATA.toString());
 		    }
 		    try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
 		      String responseContent = Utf8ResponseHandler.INSTANCE.handleResponse(response);
