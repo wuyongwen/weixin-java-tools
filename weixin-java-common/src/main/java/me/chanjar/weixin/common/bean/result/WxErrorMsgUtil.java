@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,8 +31,8 @@ public class WxErrorMsgUtil {
 		return msg;
 	}
 	public static void initMap(){
-		String jsonContext  = readFile(WxErrorMsgUtil.class.getResource("").getPath()+"/error.json");
-		System.out.println(jsonContext);
+		String jsonContext  = readFile();
+		//System.out.println(jsonContext);
 		List<WxErrMsg> list = gson.fromJson(jsonContext, new TypeToken<List<WxErrMsg>>(){}.getType());
 		if(list!=null&&list.size()>0){
 			for(WxErrMsg e:list){
@@ -40,14 +41,14 @@ public class WxErrorMsgUtil {
 		}
 	}
 
-	private static String readFile(String Path) {
+	private static String readFile() {
 		
 		BufferedReader reader = null;
 		String laststr = "";
 		try {
-			FileInputStream fileInputStream = new FileInputStream(Path);
-			InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream, "UTF-8");
-			reader = new BufferedReader(inputStreamReader);
+			InputStream is=WxErrorMsgUtil.class.getClass().getResourceAsStream("/me/chanjar/weixin/common/bean/result/error.json");   
+	        BufferedReader br=new BufferedReader(new InputStreamReader(is));  
+			reader = new BufferedReader(br);
 			String tempString = null;
 			while ((tempString = reader.readLine()) != null) {
 				laststr += tempString;

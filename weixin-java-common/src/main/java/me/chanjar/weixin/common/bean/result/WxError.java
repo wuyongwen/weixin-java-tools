@@ -4,6 +4,7 @@ import me.chanjar.weixin.common.util.StringUtils;
 import me.chanjar.weixin.common.util.json.WxGsonBuilder;
 
 import java.io.Serializable;
+import java.net.URL;
 
 /**
  * 微信错误码说明
