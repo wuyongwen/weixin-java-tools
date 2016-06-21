@@ -1,5 +1,6 @@
 package me.chanjar.weixin.common.bean.result;
 
+import me.chanjar.weixin.common.util.StringUtils;
 import me.chanjar.weixin.common.util.json.WxGsonBuilder;
 
 import java.io.Serializable;
@@ -49,7 +50,11 @@ public class WxError implements Serializable {
 
   @Override
   public String toString() {
-    return "微信错误: errcode=" + errorCode + ", errmsg=" + errorMsg + "\njson:" + json;
+	String msg = WxErrorMsgUtil.getMsg(errorCode);
+	if(StringUtils.isBlank(msg)){
+		return "微信错误: errcode=" + errorCode + ", errmsg=" + errorMsg + "\njson:" + json;
+	}else{
+		return "微信错误:"+msg;
+	}
   }
-
 }
