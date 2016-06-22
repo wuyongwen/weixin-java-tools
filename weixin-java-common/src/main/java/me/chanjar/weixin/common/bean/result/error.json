@@ -380,6 +380,10 @@
         "val": "用户受限，可能是违规后接口被封禁"
     },
     {
+        "key": "61005",
+        "val": "component ticket已失效"
+    },
+    {
         "key": "61451",
         "val": "参数错误(invalid parameter)"
     },
